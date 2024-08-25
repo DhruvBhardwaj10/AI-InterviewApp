@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 export default function Dashboard() {
   const location = useLocation();
   const { mockId } = location.state || {};
-  console.log(mockId);
+  
   const { user } = useUser();
    const {isSignedIn}=useUser();
   const createdBy = user?.emailAddresses?.[0]?.emailAddress || 'unknown';
