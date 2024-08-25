@@ -13,7 +13,7 @@ import { motion } from 'framer-motion';
 
 export default function Component() {
   const { mockId } = useParams();
-  console.log(mockId);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
