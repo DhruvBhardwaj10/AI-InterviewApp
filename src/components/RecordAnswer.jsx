@@ -14,7 +14,7 @@ import { motion } from 'framer-motion';
 
 export default function RecordAnswer({ mockInterviewQuestions, activeQuestionIndex, setActiveQuestionIndex, mockId }) {
   const api = axios.create({
-    baseURL: 'http://localhost:4000',
+    baseURL: 'https://ai-interview-backend-five.vercel.app',
   });
 
   const [userAnswer, setUserAnswer] = useState('');
