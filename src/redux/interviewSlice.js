@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // Define the API URL
-const API_URL = 'http://localhost:4000/api/interviews';
+const API_URL = 'https://ai-interview-backend-five.vercel.app';
 
 // Thunk for creating an interview
 export const createInterviewThunk = createAsyncThunk(
