@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // Define the API URL
-const API_URL = 'https://ai-interview-backend-4.onrender.com';
+const API_URL = 'https://ai-interview-backend-4.onrender.com/api/interviews';
 
 // Thunk for creating an interview
 export const createInterviewThunk = createAsyncThunk(
