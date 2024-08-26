@@ -16,7 +16,7 @@ const InterviewList = ({createdBy,mockId}) => { // Accept userId as a prop
   }, [dispatch, createdBy]);
 
   if (status === 'loading') return <LoaderCircle className="animate-spin" />;
-  if (status === 'failed') return <p>Error: {error}</p>;
+  if (status === 'failed') return <p>No Interviews Found.Please start an Interview</p>;
 
   // Filter interviews based on createdBy if needed
   const interviewData = interviews.filter(interview => interview.createdBy === createdBy);
