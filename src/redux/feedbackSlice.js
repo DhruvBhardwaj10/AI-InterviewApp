@@ -11,7 +11,7 @@ const initialState = {
 export const fetchFeedbackData = createAsyncThunk(
   'feedback/fetchFeedbackData',
   async (mockId) => {
-    const response = await axios.get(`http://localhost:4000/api/userAnswer/${mockId}`);
+    const response = await axios.get(`https://ai-interview-backend-five.vercel.app/${mockId}`);
     return response.data.data;
   }
 );
