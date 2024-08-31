@@ -35,49 +35,64 @@ export default function Component({ createdBy }) {
 
   const userId = user.id;
 
-  const submitHandler = async (e) => {
+ const submitHandler = async (e) => {
     e.preventDefault();
     setLoading(true);
     const mockId = uuidv4();
     const inputPrompt = `Based on my Job Position: ${jobPosition}, Job Description: ${jobDesc}, & Years of Experience: ${jobExperience}, generate ${import.meta.env.VITE_INTERVIEW_QUESTION_COUNT} questions and answers in JSON format. Always generate different Question and Answer because a lot of people are gonna use this.`;
 
     try {
-      const result = await chatSession.sendMessage(inputPrompt);
-      const responseText = await result.response.text();
-      const cleanedResponse = responseText.replace(/```json|```/g, '').trim();
-      let jsonResponse = JSON.parse(cleanedResponse);
+        const result = await chatSession.sendMessage(inputPrompt);
+        const responseText = await result.response.text();
 
-      if (!Array.isArray(jsonResponse)) {
-        throw new Error("Invalid JSON response format");
-      }
+        // Attempt to clean and sanitize the response
+        const cleanedResponse = responseText.replace(/```json|```/g, '').trim();
 
-      const interviewData = {
-        mockId,
-        jobPosition,
-        jobDesc,
-        jobExperience,
-        jsonMockRes: jsonResponse,
-        createdBy: createdBy,
-        createdAt: moment().toISOString(),
-      };
+        let jsonResponse;
+        try {
+            // Try parsing JSON
+            jsonResponse = JSON.parse(cleanedResponse);
+        } catch (parseError) {
+            console.error('JSON parsing error:', parseError, 'Response:', cleanedResponse);
+            alert('Failed to parse AI response. Please try again.');
+            setLoading(false);
+            return;
+        }
 
-      const action = await dispatch(createInterviewThunk(interviewData));
-      if (createInterviewThunk.fulfilled.match(action)) {
-        navigate(`/dashboard/interview/${action.payload.mockId}`);
-        setJobPosition('');
-        setJobDescription('');
-        setJobExperience('');
-        setDialog(false);
-      } else {
-        throw new Error(action.payload.error?.message || 'An unknown error occurred.');
-      }
+        // Check if the parsed response is an array
+        if (!Array.isArray(jsonResponse)) {
+            throw new Error("Invalid JSON response format");
+        }
+
+        // Construct interview data
+        const interviewData = {
+            mockId,
+            jobPosition,
+            jobDesc,
+            jobExperience,
+            jsonMockRes: jsonResponse,
+            createdBy: createdBy,
+            createdAt: moment().toISOString(),
+        };
+
+        // Dispatch create interview thunk
+        const action = await dispatch(createInterviewThunk(interviewData));
+        if (createInterviewThunk.fulfilled.match(action)) {
+            navigate(`/dashboard/interview/${action.payload.mockId}`);
+            setJobPosition('');
+            setJobDescription('');
+            setJobExperience('');
+            setDialog(false);
+        } else {
+            throw new Error(action.payload.error?.message || 'An unknown error occurred.');
+        }
     } catch (error) {
-      console.error('Error in submitHandler:', error);
-      alert(`There was an error processing your request: ${error.message}`);
+        console.error('Error in submitHandler:', error);
+        alert(`There was an error processing your request: ${error.message}`);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   return (
     <motion.div
