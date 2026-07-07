@@ -1,16 +1,38 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// API key for the Generative AI API
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+// Make the model configurable via env. Set VITE_GEMINI_MODEL to a valid model name in your GCP project.
+// If not provided, we fall back to a known-supported model identifier.
+// Example: VITE_GEMINI_MODEL=models/text-bison-001
+const configuredModel = import.meta.env.VITE_GEMINI_MODEL || "models/text-bison-001";
 
 let chatSession;
 
 async function initializeChatSession() {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    
-    const model = await genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-    });
+
+    let model;
+    try {
+      model = await genAI.getGenerativeModel({
+        model: configuredModel,
+      });
+    } catch (err) {
+      console.error(`Failed to load configured model (${configuredModel}):`, err);
+
+      // Try a safer fallback model. Update VITE_GEMINI_MODEL in your environment to a supported model
+      // (use ModelService.ListModels or the Google docs to find available models).
+      const fallbackModel = "models/text-bison-001";
+      if (configuredModel !== fallbackModel) {
+        console.log(`Falling back to ${fallbackModel}`);
+        model = await genAI.getGenerativeModel({ model: fallbackModel });
+      } else {
+        // Nothing left to try — rethrow for upper-level handling
+        throw err;
+      }
+    }
 
     const generationConfig = {
       temperature: 1,
